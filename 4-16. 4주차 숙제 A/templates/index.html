@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <title>원페이지쇼핑몰</title>
+
+    <meta property="og:title" content="원페이지쇼핑몰" />
+    <meta property="og:description" content="내가 만든 첫 웹서비스!" />
+    <meta property="og:image" content="{{ url_for('static', filename='ogimage.jpg') }}" />
+
+    <style>
+        .wrap {
+            margin: auto;
+            width: 600px;
+        }
+
+        .pic {
+            width: 400px;
+            height: 400px;
+            margin: auto;
+            background-image: url("https://shopping-phinf.pstatic.net/main_2183882/21838827773.2.20200129100927.jpg?type=f640");
+            background-position: center;
+            background-size: cover;
+        }
+
+        .btn {
+            margin: auto;
+            display: block;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                type: "GET",
+                url: "https://api.manana.kr/exchange/rate.json",
+                data: {},
+                success: function (response) {
+                    let now_rate = response[1]['rate'];
+                    $('#now_rate').text(now_rate)
+                }
+            })
+            order_listing();
+        });
+
+        function order_listing() {
+            // 주문목록 보기 API 연결
+            $.ajax({
+                type: "GET",
+                url: "/order",
+                data: {},
+                success: function (response) {
+                    let all_data = response['all_order_data'];
+                    for(let i = 0; i < all_data.length; i++){
+                        let name = all_data[i]['name'];
+                        let quan = all_data[i]['quan'];
+                        let addr = all_data[i]['addr'];
+                        let phone = all_data[i]['phone'];
+                        let temp = `<tr>
+                                        <th scope="row">${name}</th>
+                                        <td>${quan}</td>
+                                        <td>${addr}</td>
+                                        <td>${phone}</td>
+                                    </tr>`
+                        $('#table_body').append(temp);
+                    }
+                }
+            })
+        }
+
+        function order() {
+            // 주문하기 API 연결
+            let name = $('#input-name').val();
+            let quan = $('#inputGroupSelect01').val();
+            let addr = $('#input-addr').val();
+            let phone = $('#input-phone').val();
+            if (name == '') {
+                alert('이름을 입력하세요')
+            } else if (quan == '--수량을 선택하세요 (최대 3개)--') {
+                alert('수량을 선택하세요')
+            } else if (addr == '') {
+                alert('주소를 입력하세요')
+            } else if (phone == '') {
+                alert('휴대폰 번호를 입력하세요')
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: "/order",
+                    data: {name_order: name, quan_order: quan, addr_order: addr, phone_order: phone},
+                    success: function (response) { // 성공하면
+                        alert(response['msg']);
+                        window.location.reload();
+                    }
+                })
+
+            }
+
+        }
+    </script>
+
+</head>
+
+<body>
+<div class="wrap">
+    <div class="pic"></div>
+    <h2><span style="font-weight: 900;">K611 텐키리스 키보드</span><span style="font-size:large; margin: 15px">가격:39,900원<span>
+    </h2>
+    <span style="color:blue">달러-원 환율 : <span id="now_rate">-</span></span>
+    <hr>
+    <p>키방식 : 무접점(광축)접점 | 방식 : 리니어 | 키캡 : 이중사출키 | 스위치 : 카일 | 부가기능 : 무한동시입력, 높이조절받침대, 백라이트(LED튜닝), 미끄럼방지 패드 | 재질 : ABS |
+        크기 : 36cm | 키형태 : 스텝스컬처 | 키개수 : 87키</p>
+    <hr>
+    <div class="orderbox">
+        <h4><span style="font-weight: 1000">주문하기</span></h4>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">주문자 성함</span>
+            </div>
+            <input type="text" class="form-control" id="input-name" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01">수량</label>
+            </div>
+            <select class="custom-select" id="inputGroupSelect01">
+                <option selected>--수량을 선택하세요 (최대 3개)--</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+            </select>
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">주소</span>
+            </div>
+            <input type="text" class="form-control" id="input-addr" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">전화번호</span>
+            </div>
+            <input type="text" class="form-control" id="input-phone" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <button type="button" onclick="order()" class="btn btn-dark">주문하기</button>
+    </div>
+    <p></p>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">이름</th>
+            <th scope="col">수량</th>
+            <th scope="col">주소</th>
+            <th scope="col">전화번호</th>
+        </tr>
+        </thead>
+        <tbody id="table_body">
+        </tbody>
+    </table>
+</div>
+</body>
+
+</html>

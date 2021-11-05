@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>jQuery 연습하고 가기!</title>
+
+    <!-- JQuery를 import 합니다 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <style type="text/css">
+        div.question-box {
+            margin: 10px 0 20px 0;
+        }
+    </style>
+
+    <script>
+        function q1() {
+            $.ajax({
+                type: "GET", // GET 방식으로 요청한다.
+                url: , // 요청할 url
+                data: {}, // 요청하면서 함께 줄 데이터 (GET 요청시엔 비워두세요)
+                success: function (response) { // 서버에서 준 결과를 response라는 변수에 담음
+                    console.log(response) // 서버에서 준 결과를 이용해서 나머지 코드를 작성
+                }
+            })
+        }
+
+    </script>
+
+</head>
+
+<body>
+</body>
+
+</html>
